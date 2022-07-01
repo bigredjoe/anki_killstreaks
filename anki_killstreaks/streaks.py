@@ -67,12 +67,12 @@ class MultikillNoMedalState(MultikillMixin):
 
 @attr.s(frozen=True)
 class MultikillMedalState(MultikillMixin):
-
     id_ = attr.ib()
     name = attr.ib()
     medal_image = attr.ib()
     rank = attr.ib()
     game_id = attr.ib()
+    medal_audio = attr.ib(default=None)
     _call = attr.ib(default=None)
     is_earnable_medal = attr.ib(default=True)
     is_displayable_medal = attr.ib(default=True)
@@ -83,6 +83,7 @@ class MultikillMedalState(MultikillMixin):
 
     def next_streak_index(self, current_streak_index):
         return current_streak_index + 1
+
 
 class EndState(MultikillMixin):
     def __init__(self, medal_state, index_to_return_to):
@@ -114,10 +115,10 @@ class KillingSpreeMedalState(KillingSpreeMixin):
     medal_image = attr.ib()
     rank = attr.ib()
     game_id = attr.ib()
+    medal_audio = attr.ib(default=None)
     _call = attr.ib(default=None)
     is_displayable_medal = attr.ib(default=True)
     is_earnable_medal = attr.ib(default=True)
-
 
     @property
     def call(self):
@@ -302,11 +303,9 @@ class AnswerShownState:
             current_streak_index=self._current_streak_index,
         )
 
-
     def on_show_answer(self):
         """Can be triggered by edit field in review add-on"""
         return self
-
 
     def _advancement_requirements_met(
         self, card_did_pass, question_answered_at
@@ -324,7 +323,8 @@ class AnswerShownState:
             states=self.states,
             question_shown_at=datetime.now(),
             interval_s=self._interval_s,
-            current_streak_index=self.current_medal_state.next_streak_index(self._current_streak_index),
+            current_streak_index=self.current_medal_state.next_streak_index(
+                self._current_streak_index),
         )
 
     def _reset_state_machine(self, new_index=0):
@@ -342,9 +342,15 @@ class AnswerShownState:
 
 images_dir = join(dirname(__file__), "images")
 
+audio_dir = join(dirname(__file__), "audio")
+
 
 def image_path(filename):
     return join(images_dir, filename)
+
+
+def audio_path(filename):
+    return join(audio_dir, filename)
 
 
 @attr.s(frozen=True)
@@ -371,6 +377,7 @@ HALO_MULTIKILL_STATES = [
     MultikillMedalState(
         id_="Double Kill",
         medal_image=image_path("Doublekill_Medal.webp.png"),
+        medal_audio=audio_path("double_kill.wav"),
         name="Double Kill",
         game_id="halo_3",
         rank=2,
@@ -378,6 +385,7 @@ HALO_MULTIKILL_STATES = [
     MultikillMedalState(
         id_="Triple Kill",
         medal_image=image_path("Triplekill_Medal.webp.png"),
+        medal_audio=audio_path("triple_kill.wav"),
         name="Triple Kill",
         game_id="halo_3",
         rank=3,
@@ -385,6 +393,7 @@ HALO_MULTIKILL_STATES = [
     MultikillMedalState(
         id_="Overkill",
         medal_image=image_path("Overkill_Medal.png"),
+        medal_audio=audio_path("overkill.wav"),
         name="Overkill",
         game_id="halo_3",
         rank=4,
@@ -392,6 +401,7 @@ HALO_MULTIKILL_STATES = [
     MultikillMedalState(
         id_="Killtacular",
         medal_image=image_path("Killtacular_Medal.webp.png"),
+        medal_audio=audio_path("killtacular.wav"),
         name="Killtacular",
         game_id="halo_3",
         rank=5,
@@ -399,6 +409,7 @@ HALO_MULTIKILL_STATES = [
     MultikillMedalState(
         id_="Killtrocity",
         medal_image=image_path("Killtrocity_Medal.webp.png"),
+        medal_audio=audio_path("killtrocity.wav"),
         name="Killtrocity",
         game_id="halo_3",
         rank=6,
@@ -406,6 +417,7 @@ HALO_MULTIKILL_STATES = [
     MultikillMedalState(
         id_="Killimanjaro",
         medal_image=image_path("Killimanjaro_Medal.webp.png"),
+        medal_audio=audio_path("killimanjaro.wav"),
         name="Killimanjaro",
         game_id="halo_3",
         rank=7,
@@ -413,6 +425,7 @@ HALO_MULTIKILL_STATES = [
     MultikillMedalState(
         id_="Killtastrophe",
         medal_image=image_path("Killtastrophe_Medal.webp.png"),
+        medal_audio=audio_path("killtastrophe.wav"),
         name="Killtastrophe",
         game_id="halo_3",
         rank=8,
@@ -420,6 +433,7 @@ HALO_MULTIKILL_STATES = [
     MultikillMedalState(
         id_="Killpocalypse",
         medal_image=image_path("Killpocalypse_Medal.webp.png"),
+        medal_audio=audio_path("killpocalypse.wav"),
         name="Killpocalypse",
         game_id="halo_3",
         rank=9,
@@ -428,6 +442,7 @@ HALO_MULTIKILL_STATES = [
         medal_state=MultikillMedalState(
             id_="Killionaire",
             medal_image=image_path("Killionaire_Medal.webp.png"),
+            medal_audio=audio_path("killionaire.wav"),
             name="Killionaire",
             game_id="halo_3",
             rank=10,
@@ -445,6 +460,7 @@ HALO_KILLING_SPREE_STATES = [
     KillingSpreeMedalState(
         id_="Killing Spree",
         medal_image=image_path("Killing_Spree_Medal.png"),
+        medal_audio=audio_path("killing_spree.wav"),
         name="Killing Spree",
         game_id="halo_3",
         rank=5,
@@ -456,6 +472,7 @@ HALO_KILLING_SPREE_STATES = [
     KillingSpreeMedalState(
         id_="Killing Frenzy",
         medal_image=image_path("Killing_Frenzy_Medal.webp.png"),
+        medal_audio=audio_path("killing_frenzy.wav"),
         name="Killing Frenzy",
         game_id="halo_3",
         rank=10,
@@ -467,6 +484,7 @@ HALO_KILLING_SPREE_STATES = [
     KillingSpreeMedalState(
         id_="Running Riot",
         medal_image=image_path("Running_Riot_Medal.webp.png"),
+        medal_audio=audio_path("running_riot.wav"),
         name="Running Riot",
         game_id="halo_3",
         rank=15,
@@ -478,6 +496,7 @@ HALO_KILLING_SPREE_STATES = [
     KillingSpreeMedalState(
         id_="Rampage",
         medal_image=image_path("Rampage_Medal.webp.png"),
+        medal_audio=audio_path("rampage.wav"),
         name="Rampage",
         game_id="halo_3",
         rank=20,
@@ -489,6 +508,7 @@ HALO_KILLING_SPREE_STATES = [
     KillingSpreeMedalState(
         id_="Untouchable",
         medal_image=image_path("Untouchable_Medal.webp.png"),
+        medal_audio=audio_path("untouchable.wav"),
         name="Untouchable",
         game_id="halo_3",
         rank=25,
@@ -500,6 +520,7 @@ HALO_KILLING_SPREE_STATES = [
     KillingSpreeMedalState(
         id_="Invincible",
         medal_image=image_path("Invincible_Medal.webp.png"),
+        medal_audio=audio_path("invincible.wav"),
         name="Invincible",
         game_id="halo_3",
         rank=30,
@@ -527,6 +548,7 @@ HALO_KILLING_SPREE_STATES = [
         medal_state=KillingSpreeMedalState(
             id_="Perfection",
             medal_image=image_path("Perfection_Medal.webp.png"),
+            medal_audio=audio_path("perfection.wav"),
             name="Perfection",
             game_id="halo_3",
             rank=50,

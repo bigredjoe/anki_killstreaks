@@ -29,6 +29,7 @@ from aqt.reviewer import Reviewer
 from aqt.overview import Overview
 from anki.hooks import addHook, wrap
 from anki.stats import CollectionStats
+from aqt.sound import av_player
 
 from . import chase_mode
 from .config import local_conf
@@ -84,7 +85,8 @@ mw.killstreaks_profile_controller = _profile_controller
 
 def main():
     _wrap_anki_objects(_profile_controller)
-    connect_menu(main_window=mw, profile_controller=_profile_controller, network_thread=job_queue)
+    connect_menu(main_window=mw, profile_controller=_profile_controller,
+                 network_thread=job_queue)
     _network_thread.start()
 
 
@@ -158,6 +160,15 @@ _tooltipTimer = None
 _tooltipLabel = None
 
 
+def playSounds(medals):
+    for m in medals:
+        if (hasattr(m, "medal_audio") and m.medal_audio):
+            mw.progress.timer(
+                1, lambda m=m: av_player.insert_file(
+                    filename=m.medal_audio), False
+            )
+
+
 def showToolTip(medals, period=local_conf["duration"]):
     global _tooltipTimer, _tooltipLabel
 
@@ -192,6 +203,7 @@ def showToolTip(medals, period=local_conf["duration"]):
     lab.show()
     _tooltipTimer = mw.progress.timer(period, closeTooltip, False)
     _tooltipLabel = lab
+    playSounds(medals)
 
 
 def closeTooltip():
